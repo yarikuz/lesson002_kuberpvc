@@ -1,0 +1,49 @@
+piVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redmine
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redmine
+  minReadySeconds: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: redmine
+    spec:
+      volumes:
+        - name: postgres-pv-storage
+          persistentVolumeClaim:
+            claimName: db-persistent-volume-claim
+      containers:
+        - name: redmine
+          image: redmine:4.1.1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          envFrom:
+            # Load the environment variables/PostgresSQL credentials
+            - configMapRef:
+                # This should be the ConfigMap name created ealier
+                name: db-secret-credentials
+          env:
+            - name: REDMINE_DB_POSTGRES
+              value: database
+            - name: REDMINE_DB_USERNAME
+              value: testUser
+            - name: REDMINE_DB_DATABASE
+              value: testDB
+            - name: REDMINE_SECRET_KEY_BASE
+              name: "62742"
+            - name: REDMINE_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-secret-config
+                  key: password
