@@ -34,12 +34,13 @@ spec:
             - name: REDMINE_DB_DATABASE
               value: testDB
             - name: REDMINE_SECRET_KEY_BASE
-              value: "62742"
+              value: '62742'
             - name: REDMINE_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: postgres-secret-config
-                  key: password
+              value: '62742'
+              # valueFrom:
+              #   secretKeyRef:
+              #     name: postgres-secret-config
+              #     key: password
 
           volumeMounts:
             - mountPath: /usr/src/redmine/files
